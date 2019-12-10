@@ -1,0 +1,27 @@
+{
+  "name": "ht_webapp",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "dev": "nodemon app"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.1",
+    "standard": "^14.3.1"
+  },
+  "dependencies": {
+    "bluebird": "^3.7.2",
+    "body-parser": "^1.19.0",
+    "debug": "^4.1.1",
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "express-validator": "^6.3.0",
+    "http-errors": "^1.7.3",
+    "mongoose": "^5.8.0",
+    "morgan": "^1.9.1"
+  },
+  "description": ""
+}
