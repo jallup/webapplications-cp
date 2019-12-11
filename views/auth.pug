@@ -1,0 +1,19 @@
+extends layout
+
+block content
+  h1 Welcome
+
+
+
+  h2 Create New User
+  form(method='POST' action='/auth/create')
+              div.form-group
+                label(for='name') Name:
+                input#name.form-control(type='text', placeholder='Your name' name='name')
+              div.form-group
+                label(for='content') Email:
+                input#content.form-control(type='text', placeholder='Email' name='email')
+              div.form-group
+                label(for='content') Password:
+                input#content.form-control(type='text', placeholder='Password' name='password')
+              button.btn.btn-primary(type='submit') Create new user

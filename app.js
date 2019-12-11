@@ -1,6 +1,12 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const session = require('express-session')
+var logger = require('morgan');
+var Promise = require("bluebird");
+var createError = require('http-errors');
+var path = require('path');
+
+var authRouter = require('./routes/auth');
 
 TWO_HOURS = 1000 * 60 * 60 * 1
 
@@ -23,10 +29,28 @@ const users = [
 
 const app = express()
 
+var mongoose = require('mongoose');
+
+var dev_db_url = 'mongodb://localhost:27017'
+var mongoDB = process.env.MONGODB_URI || dev_db_url;
+mongoose.connect(mongoDB);
+mongoose.Promise = Promise;
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
+
+
 app.use(bodyParser.urlencoded({
   extended: true
 
 }))
+
+app.use('/auth', authRouter);
 
 app.use(session({
   name: SESS_NAME,
@@ -110,7 +134,7 @@ app.get('/register', redirectHome ,(req, res) => {
     <h1>Register</h1>
     <form method='post' action='/register'>
       <input type='email' name='email' placeholder='Email' required />
-      <input type='name' name='name' placeholder='Username' required />
+      <input type='name' name='name' placeholder='Name' required />
       <input type='password' name='password' placeholder='Password' required />
       <input type='submit' />
     </form>
@@ -135,9 +159,9 @@ app.post('/login',redirectHome, (req, res) => {
 })
 
 app.post('/register',redirectHome , (req, res) => {
-  const { user, email, password} = req.body
+  const { name , email, password} = req.body
 
-  if (user && email && password){
+  if (name && email && password){
     const exists = users.some(
       user => user.email === email
     )
@@ -145,7 +169,7 @@ app.post('/register',redirectHome , (req, res) => {
       if (!exists) {
         const user = {
           id: users.length +1,
-          user,
+          name,
           email,
           password
         }
@@ -154,12 +178,9 @@ app.post('/register',redirectHome , (req, res) => {
         req.session.userId = user.id
         return res.redirect('/home')
       }
-
+    
   }
-  res.redirec('/register') // Error
-
-
-  res.redirect('/login')
+  res.redirect('/register')
 
 })
 
@@ -176,3 +197,6 @@ app.post('/logout', redirectLogin,(req, res) => {
 app.listen(PORT, () => console.log(
   `http://localhost:${PORT}`
 ))
+
+
+module.exports = app;
